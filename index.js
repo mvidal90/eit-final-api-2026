@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 
 import cartRoutes from './routes/cart.routes.js'
-import contactRoutes from './routes/contact.routes.js'
+import messagesRoutes from './routes/messages.routes.js'
 import productsRoutes from './routes/products.routes.js'
 
 import { dbConection } from './database/dbConection.js'
@@ -18,7 +18,7 @@ api.use(cors())
 api.use(express.json())
 
 api.use('/api/cart', cartRoutes)
-api.use('/api/contact', contactRoutes)
+api.use('/api/message', messagesRoutes)
 api.use('/api/products', productsRoutes)
 
 
