@@ -1,3 +1,5 @@
+import fs from "fs"
+import { Image } from "../models/Image.js";
 import { Products } from "../models/Product.js";
 
 export const getProducts = async (req, res) => {
@@ -15,10 +17,16 @@ export const getProducts = async (req, res) => {
                                         .skip(pageNumberParsed > 1 ? (pageNumberParsed - 1) * limitParsed : 0)
                                         .limit(limitParsed)
 
+
+        const productsWithMongoImage = products.map(({_doc}) => ({
+            ..._doc,
+            image: _doc.image.startsWith("http") ? _doc.image : `${process.env.API_BASE_URL}${_doc.image}`
+        }))
+
         res.json({
             ok: true,
             msg: "Productos obtenidos correctamente",
-            products,
+            products: productsWithMongoImage,
             total: productsCount,
             totalPages: Math.ceil(productsCount / limitParsed), // Math.ceil para redondear hacia arriba SIEMPRE, ya que aunque haya 11 productos y el límite sea 10, se necesitan 2 páginas para mostrar todos los productos.
             pageNumber: pageNumberParsed
@@ -58,9 +66,39 @@ export const getProductById = async (req, res) => {
 }
 export const createProduct = async (req, res) => {
     const data = req.body
+    const file = req.file
 
     try {
-        const newProduct = await Products.create(data)
+
+        if (!file) {
+            return res.status(400).json({
+                ok: false,
+                msg: "La imagen del producto es obligatoria"
+            })
+        }
+
+        const imageBuffer = fs.readFileSync("./" + file.path)
+
+        const image = await Image.create({
+            fileName: file.filename,
+            imageContent: {
+                data: imageBuffer,
+                contentType: "image/png"
+            }
+        })
+
+        const newProduct = await Products.create({
+            ...data,
+            image: `/image/${image._id}`
+        })
+
+        fs.rm("./" + file.path, error => {
+            if (error) {
+                console.error("Error al eliminar la imagen temporal:", error)
+            } else {
+                console.log("Imagen temporal eliminada correctamente")
+            }       
+        })
 
         res.status(201).json({
             ok: true,
@@ -68,6 +106,7 @@ export const createProduct = async (req, res) => {
             product: newProduct
         })
     } catch (error) {
+        console.error("Error al crear el producto:", error)
         res.status(500).json({
             ok: false,
             msg: "Error del servidor. Al crear el producto, por favor intenta más tarde."
