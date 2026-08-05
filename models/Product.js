@@ -12,7 +12,6 @@ const ProductSchema = new Schema({
     },
     stock: {
         type: Number,
-        required: true
     },
     brand: {
         type: String,
@@ -35,11 +34,9 @@ const ProductSchema = new Schema({
     },
     ageFrom: {
         type: Number,
-        required: true
     },
     ageTo: {
         type: Number,
-        required: true
     },
     image: {
         type: String,
