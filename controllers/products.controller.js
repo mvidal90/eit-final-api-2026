@@ -1,4 +1,5 @@
 import fs from "fs"
+import path from "path"
 import { Image } from "../models/Image.js";
 import { Products } from "../models/Product.js";
 
@@ -77,7 +78,8 @@ export const createProduct = async (req, res) => {
             })
         }
 
-        const imageBuffer = fs.readFileSync("./" + file.path)
+        const uploadPath = path.join(process.cwd(), "temp", "images");
+        const imageBuffer = fs.readFileSync(uploadPath + file.path)
 
         const image = await Image.create({
             fileName: file.filename,

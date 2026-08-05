@@ -1,11 +1,13 @@
 import multer from "multer";
+import path from "path";
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "./temp/images")
+        const uploadPath = path.join(process.cwd(), "temp", "images");
+        cb(null, uploadPath)
     },
     filename: (req, file, cb) => {
-        cb(null, `${file.fieldname}-${Date.now()}.${file.originalname.split('.')[1]}`)
+        cb(null, `${file.fieldname}-${Date.now()}.${path.extname(file.originalname)}`)
     }
 })
 
