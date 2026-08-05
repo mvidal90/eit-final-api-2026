@@ -79,7 +79,7 @@ export const createProduct = async (req, res) => {
         }
 
         const uploadPath = path.join(process.cwd(), "temp", "images");
-        const imageBuffer = fs.readFileSync(uploadPath + file.path)
+        const imageBuffer = fs.readFileSync(file.path)
 
         const image = await Image.create({
             fileName: file.filename,
