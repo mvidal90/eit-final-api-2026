@@ -10,11 +10,6 @@ export const createpreferenceMP = async (req, res) => {
         const response = await preference.create({
             body: {
                 ...body,
-                back_urls: {
-                    "success": "...",
-                    "failure": "...",
-                    "pending": "....."
-                }
             }
         })
 
